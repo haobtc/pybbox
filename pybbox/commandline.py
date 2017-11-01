@@ -33,7 +33,7 @@ def main(prog='bbox-rpc'):
 
     parser.add_argument('--connect',
                         type=str,
-                        help='server to connect to, default depends BBOX_CONNECT')
+                        help='server to connect to, fallback to $BBOX_RPC_CONNECT')
 
     parser.add_argument('--pp',
                         type=bool,
@@ -47,15 +47,18 @@ def main(prog='bbox-rpc'):
 
     parser.add_argument('--cert',
                         type=str,
-                        help='client auth cert fail')
+                        help='client auth cert, fallback to $BBOX_RPC_CERT')
 
     args = parser.parse_args()
 
     srv, method = args.srv_method.split('::')
     params = [guess_json(p) for p in args.params]
 
-    connect = args.connect or os.getenv('BBOX_CONNECT', 'http://127.0.0.1:10080')
-    client = BBoxClient(connect, cert=args.cert)
+    connect = args.connect or os.getenv('BBOX_RPC_CONNECT')
+    assert connect, 'connect cannot be void'
+
+    cert = args.cert or os.getenv('BBOX_RPC_CERT')
+    client = BBoxClient(connect, cert=cert)
     try:
         r = client.request(srv, method, *params, retry=args.retry)
         if args.pp:
@@ -65,5 +68,3 @@ def main(prog='bbox-rpc'):
     except RPCError as e:
         print(e.code)
         print(e.message)
-
-

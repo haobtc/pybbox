@@ -20,7 +20,7 @@ class BBoxClient(object):
         self.connect = connect
         self.session = requests.session()
         if cert is not None:
-            assert connect.startswith('https')
+            assert connect.startswith('https:')
             self.session.verify = cert
 
     def request(self, srv, method, *params, **kw):
