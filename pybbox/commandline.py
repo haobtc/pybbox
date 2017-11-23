@@ -37,7 +37,7 @@ def main(prog='bbox-rpc'):
 
     parser.add_argument('--pp',
                         type=bool,
-                        default=False,
+                        default=True,
                         help='pretty print result')
 
     parser.add_argument('--retry',
