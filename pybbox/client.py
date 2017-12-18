@@ -23,7 +23,7 @@ class BBoxClient(object):
             assert connect.startswith('https:')
             self.session.verify = cert
 
-    def request_result(self, srv, method, *params **kw):
+    def request_result(self, srv, method, *params, **kw):
         return self.request(srv, method, *params, **kw)['result']
 
     def request(self, srv, method, *params, **kw):
