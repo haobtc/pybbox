@@ -2,7 +2,7 @@ from distutils.core import setup
 from setuptools import find_packages
 
 setup(name='pybbox',
-      version='0.0.2',
+      version='0.0.3',
       description="bbox client in python",
       author='Zeng Ke',
       author_email='superisaac.ke@gmail.com',
