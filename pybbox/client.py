@@ -1,4 +1,5 @@
 import sys
+import json
 import warnings
 import logging
 import time
@@ -12,6 +13,7 @@ else:
 
 class RPCError(Exception):
     def __init__(self, code, message):
+        super(RPCError, self).__init__('{} {}'.format(code, message))
         self.code = code
         self.message = message
 
@@ -51,7 +53,11 @@ class BBoxClient(object):
             'params': params
             }
         resp = self.session.post(url, json=payload, timeout=10)
-        response = resp.json()
+        try:
+            response = resp.json()
+        except json.decoder.JSONDecodeError:
+            raise RPCError(resp.status_code, resp.text)
+
         if response.get('error'):
             logging.warn('walltfarm error response: %s',
                          response['error'])
