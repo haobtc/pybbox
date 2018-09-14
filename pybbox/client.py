@@ -3,7 +3,6 @@ import json
 import warnings
 import logging
 import time
-import uuid
 import requests
 
 if sys.version > '3':
@@ -16,6 +15,12 @@ class RPCError(Exception):
         super(RPCError, self).__init__('{} {}'.format(code, message))
         self.code = code
         self.message = message
+
+request_id_counter = 0
+def next_request_id():
+    global request_id_counter
+    request_id_counter += 1
+    return request_id_counter
 
 class BBoxClient(object):
     def __init__(self, connect, cert=None):
@@ -48,7 +53,7 @@ class BBoxClient(object):
 
         method = srv + '::' + method
         payload = {
-            'id': uuid.uuid4().hex,
+            'id': next_request_id(),
             'method': method,
             'params': params
             }
