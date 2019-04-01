@@ -5,6 +5,8 @@ import logging
 import time
 import requests
 
+logger = logging.getLogger(__name__)
+
 if sys.version > '3':
     from urllib.parse import urljoin
 else:
@@ -13,6 +15,12 @@ else:
 class RPCError(Exception):
     def __init__(self, code, message):
         super(RPCError, self).__init__('{} {}'.format(code, message))
+        self.code = code
+        self.message = message
+
+class HTTPError(Exception):
+    def __init__(self, code, message):
+        super(HTTPERror, self).__init__('{} {}'.format(code, message))
         self.code = code
         self.message = message
 
@@ -41,11 +49,12 @@ class BBoxClient(object):
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
                     return self._request(srv, method, *params)
-            except requests.exceptions.ConnectionError as e:
+            except (requests.exceptions.ConnectionError, HTTPError):
                 if i >= retry - 1:
                     raise
-                logging.debug('conn error: %s', e)
+                logger.warn('conn error while requesting %s::%s', srv, method, exc_info=True)
                 time.sleep(0.1)
+
 
     def _request(self, srv, method, *params):
         url = urljoin(self.connect,
@@ -58,14 +67,18 @@ class BBoxClient(object):
             'params': params
             }
         resp = self.session.post(url, json=payload, timeout=10)
+        if resp.status_code >= 300 and resp.status_code < 200:
+            # status 2xx is considered right response
+            raise HTTPError(resp.status_code, resp.text)
+
         try:
             response = resp.json()
         except json.decoder.JSONDecodeError:
-            raise RPCError(resp.status_code, resp.text)
+            raise HTTPError(resp.status_code, resp.text)
 
         if response.get('error'):
-            logging.warn('walltfarm error response: %s',
-                         response['error'])
+            logger.warn('walltfarm error response: %s',
+                        response['error'])
             raise RPCError(response['error'].get('code'),
                            response['error'].get('message'))
         return response
