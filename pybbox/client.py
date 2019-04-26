@@ -20,7 +20,7 @@ class RPCError(Exception):
 
 class HTTPError(Exception):
     def __init__(self, code, message):
-        super(HTTPERror, self).__init__('{} {}'.format(code, message))
+        super(HTTPError, self).__init__('{} {}'.format(code, message))
         self.code = code
         self.message = message
 
