@@ -53,7 +53,7 @@ class BBoxClient(object):
                 if i >= retry - 1:
                     raise
                 logger.warn('conn error while requesting %s::%s', srv, method, exc_info=True)
-                time.sleep(0.1)
+                time.sleep(1.0)
 
 
     def _request(self, srv, method, *params):
@@ -67,7 +67,7 @@ class BBoxClient(object):
             'params': params
             }
         resp = self.session.post(url, json=payload, timeout=10)
-        if resp.status_code >= 300 and resp.status_code < 200:
+        if resp.status_code >= 300 or resp.status_code < 200:
             # status 2xx is considered right response
             raise HTTPError(resp.status_code, resp.text)
 
