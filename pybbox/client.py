@@ -66,7 +66,7 @@ class BBoxClient(object):
             'method': method,
             'params': params
             }
-        resp = self.session.post(url, json=payload, timeout=10)
+        resp = self.session.post(url, json=payload, verify=False, timeout=10)
         if resp.status_code >= 300 or resp.status_code < 200:
             # status 2xx is considered right response
             raise HTTPError(resp.status_code, resp.text)

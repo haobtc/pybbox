@@ -2,10 +2,10 @@ from distutils.core import setup
 from setuptools import find_packages
 
 setup(name='pybbox',
-      version='0.0.8',
+      version='0.0.9',
       description="bbox client in python",
-      author='Zeng Ke',
-      author_email='superisaac.ke@gmail.com',
+      author='Developers',
+      author_email='dev@haobtc.com',
       packages=find_packages(),
       scripts=['bin/bbox-rpc'],
       install_requires=[
